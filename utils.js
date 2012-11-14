@@ -93,6 +93,7 @@ Deck.prototype.toString = function () {
 // ------------------
 
 function Player (name) {
+	this.rank = -1;
 	this.name = name;
 	this.hand = [];
 }
@@ -121,11 +122,16 @@ Table.prototype.addHand = function (hand) {
 	this.currentCards = hand;
 }
 
-Table.prototype.clear = function (player) {
-	player.addHand(this.cards);
+Table.prototype.clear = function () {
 	this.currentCards = [];
 	this.cards = [];
 	this.size = 0;
+}
+
+Table.prototype.displayCards = function () {
+	for (var i = 0; i < this.currentCards.length; i++){
+		console.log(this.currentCards[i].toString());
+	}
 }
 
 // ------------------
@@ -134,6 +140,7 @@ Table.prototype.clear = function (player) {
 
 function Game (players) {
 	this.players = players;
+	this.finishedPlayers = [];
 	this.deck = new Deck();
 	this.table = new Table();
 	this.currentPlayer = 0;
@@ -150,24 +157,29 @@ Game.prototype.deal = function () {
 }
 
 // Add cards to the table and update current player
-Game.prototype.turn = function (hand) {
+Game.prototype.turn = function (hand, clear) {
+	if ( !hand ) { return false; }
+
 	var currentCards = this.table.currentCards;
 	var rank;
-	if ( currentCards.length > 0 ){
-		if ( currentCards.length != hand.length ) { return false; }
-	}
+	if ( currentCards.length === 0 ) { rank = hand[0].rank; }
+	else { rank = currentCards[0].rank; }
 
-	if ( hand.length > 4 || hand.length < 1) { return false; }
-
-	if ( validateHand(currentCards[0].rank, hand) ) {
-		this.table.addHand(hand);
-		this.players[this.currentPlayer].hand.splice(
-			this.players[this.currentPlayer].hand.indexOf(hand[0]), 1
-		);
-		this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
-		return true;
+	if ( ( hand.length + currentCards.length === 4 ) || currentCards.length === hand.length || ( currentCards.length === 0 && hand.length < 5 ) ){
+		if ( validateHand(rank, hand) ) {
+			this.table.addHand(hand);
+			for (var i = 0; i < hand.length; i++) {
+				this.players[this.currentPlayer].hand.splice(
+					this.players[this.currentPlayer].hand.indexOf(hand[i]), 1
+				);
+			};
+			if ( !clear )
+				this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
+			return true;
+		}
+		return false;
 	}
-	else { return false; }
+	return false;
 }
 
 var Kevin = new Player('Kevin');
@@ -180,7 +192,7 @@ var players = [Kevin, Alex, Ed, Joan];
 var x = new Game(players);
 x.deal();
 console.log(Kevin);
-x.turn([ Kevin.hand[0] ]);
+x.turn([ Kevin.hand[0] ], false);
 console.log(x.table);
 console.log(Kevin);
 
@@ -189,7 +201,7 @@ console.log(Kevin);
 // console.log(Ed);
 // console.log(Joan);
 
-
+// HANDLER FOR CLEAR FUNCTOIN SETS YOU AS THE CURRENT PLAYER
 
 
 
