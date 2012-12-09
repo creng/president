@@ -1,0 +1,24 @@
+body {
+  padding: 50px;
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+div#login-form {
+	position : absolute;
+    left : 50%;
+    top : 50%;
+    width : 200px;
+    height : 100px;
+    margin-left : -100px;
+    margin-top : -50px;
+}
+
+div#login-error {
+	padding : 2px;
+	font : 10px "Lucida Grande", Helvetica, Arial, sans-serif;
+	color : red;
+}
